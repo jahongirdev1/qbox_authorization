@@ -1,4 +1,4 @@
-# ![QBox Logo](https://inqbox.q19.kz/static/uploads/image/27/3b/273b4bdea7ed4569b0339c9815d48ef5.png) **QBox Authorization**
+# <img src="https://inqbox.q19.kz/static/uploads/image/27/3b/273b4bdea7ed4569b0339c9815d48ef5.png" alt="QBox Logo" width="150" height="150"/> **QBox Authorization**
 
 # QBox Authorization
 
