@@ -1,7 +1,10 @@
 name: qbox_authorization
-description: "A new Flutter package project."
+description: A simple Flutter authentication package with login screen and provider support.
 version: 0.0.1
-homepage: "https://www.example.com"
+homepage: https://github.com/jahongirdev1/qbox_authorization
+repository: https://github.com/jahongirdev1/qbox_authorization
+issue_tracker: https://github.com/jahongirdev1/qbox_authorization/issues
+documentation: https://github.com/jahongirdev1/qbox_authorization
 
 environment:
   sdk: ^3.6.0
