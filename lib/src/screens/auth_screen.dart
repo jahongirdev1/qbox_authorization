@@ -10,11 +10,27 @@ class AuthScreen extends StatefulWidget {
   const AuthScreen({
     required this.baseUrl,
     required this.onSuccess,
+    this.localeId = 1,
     super.key,
   });
 
+  /// Функция, вызываемая при успешном завершении операции.
+  ///
+  /// Принимает [token] — строковый идентификатор, полученный в результате успешной авторизации.
   final void Function(String token) onSuccess;
+
+  /// Базовый URL API.
+  ///
+  /// Используется для отправки запросов к серверу.
   final String baseUrl;
+
+  /// Идентификатор локализации, используемый при получении данных о внешнем виде.
+  ///
+  /// Возможные значения:
+  /// - `1` — русский (`ru`, по умолчанию)
+  /// - `2` — казахский (`kk`)
+  /// - `3` — английский (`en`)
+  final int localeId;
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -24,7 +40,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.initialize(widget.baseUrl);
+    authProvider.initialize(widget.baseUrl, widget.localeId);
     super.initState();
   }
 

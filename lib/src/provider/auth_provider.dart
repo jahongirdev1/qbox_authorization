@@ -16,9 +16,9 @@ class AuthProvider extends ChangeNotifier {
 
   String? token;
 
-  void initialize(String url) async {
+  void initialize(String url, int localeId) async {
     baseUrl = url;
-    appearance = await repo.getAppearance(baseUrl, 1);
+    appearance = await repo.getAppearance(baseUrl, localeId);
     info("Appearance: $appearance");
 
     notifyListeners();

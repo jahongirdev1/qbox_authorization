@@ -31,8 +31,9 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           return AuthScreen(
-            baseUrl: 'https://inqbox.q19.kz',
+            baseUrl: 'https://kenes.1414.kz',
             onSuccess: (token) => _handleLoginSuccess(context, token),
+            localeId: 1,
           );
         },
       ),
