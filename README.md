@@ -17,7 +17,7 @@ Add this to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  qbox_authorization: ^0.0.2
+  qbox_authorization: ^0.0.4
 ```
 
 Then run:
@@ -79,7 +79,9 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           return AuthScreen(
+            baseUrl: '<YOUR_API_BASE_URL>',
             onSuccess: (token) => _handleLoginSuccess(context, token),
+            localeId: 2,
           );
         },
       ),

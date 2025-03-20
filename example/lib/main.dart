@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           return AuthScreen(
-            baseUrl: 'https://kenes.1414.kz',
+            baseUrl: '<YOUR_API_BASE_URL>',
             onSuccess: (token) => _handleLoginSuccess(context, token),
-            localeId: 1,
+            localeId: 2,
           );
         },
       ),
