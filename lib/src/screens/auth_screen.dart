@@ -65,18 +65,22 @@ class _AuthScreenState extends State<AuthScreen> {
                 Center(
                   child: Column(
                     children: [
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(9)),
-                        child: Image(
-                          image: NetworkImage(
-                            widget.baseUrl + (provider.appearance?.icon ?? ''),
-                          ),
-                          errorBuilder: (_, __, ___) => const SizedBox(),
-                          width: 90,
-                          height: 90,
-                        ),
-                      ),
+                      isSvgUrl(provider.appearance?.icon ?? '')
+                          ? SvgPicture.network(
+                              '${widget.baseUrl}${provider.appearance?.icon}')
+                          : ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(9)),
+                              child: Image(
+                                image: NetworkImage(
+                                  widget.baseUrl +
+                                      (provider.appearance?.icon ?? ''),
+                                ),
+                                errorBuilder: (_, __, ___) => const SizedBox(),
+                                width: 90,
+                                height: 90,
+                              ),
+                            ),
                       Text(
                         textAlign: TextAlign.center,
                         provider.appearance?.title ?? '',
@@ -175,4 +179,6 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
   }
+
+  bool isSvgUrl(String url) => url.toLowerCase().endsWith('.svg');
 }
