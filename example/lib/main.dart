@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           return AuthScreen(
-            baseUrl: 'https://cc.bankffin.kz',
+            baseUrl: '<YOUR_API_BASE_URL>',
             onSuccess: (token) => _handleLoginSuccess(context, token),
             localeId: 2,
           );
