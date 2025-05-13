@@ -17,7 +17,7 @@ Add this to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  qbox_authorization: ^0.0.9
+  qbox_authorization: ^1.0.0
 ```
 
 Then run:

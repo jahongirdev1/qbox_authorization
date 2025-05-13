@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:qbox_authorization/src/models/test_login.dart';
+import 'package:provider/provider.dart';
+import '../provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
-import 'package:qbox_authorization/src/models/test_login.dart';
-
-import '../provider/auth_provider.dart';
 import '../styles/app_icons.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -102,82 +100,114 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 48,
-                        child: CupertinoTextField(
-                          controller: provider.login,
-                          placeholder: 'Логин',
-                          cursorColor: Colors.blue,
-                          prefix: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset(AppIcons.user),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 48,
-                        child: CupertinoTextField(
-                          controller: provider.password,
-                          obscureText: !provider.isVisible,
-                          placeholder: 'Пароль',
-                          cursorColor: Colors.blue,
-                          prefix: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset(AppIcons.password),
-                          ),
-                          suffix: IconButton(
-                            onPressed: () => provider.toggleVisibility(),
-                            icon: SvgPicture.asset(
-                              provider.isVisible
-                                  ? AppIcons.eyeOpen
-                                  : AppIcons.eyeClose,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all(Colors.blue),
-                            shape: WidgetStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
+                  child: Form(
+                    child: AutofillGroup(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: 48,
+                            child: TextField(
+                              controller: provider.login,
+                              autofillHints: const [AutofillHints.username],
+                              decoration: InputDecoration(
+                                hintText: 'Логин',
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: SvgPicture.asset(AppIcons.user,
+                                      width: 24, height: 24),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide.none,
+                                ),
                               ),
                             ),
-                            elevation: const WidgetStatePropertyAll(0),
                           ),
-                          onPressed: () async {
-                            if (widget.testLogin != null) {
-                              provider.testLogin(widget.testLogin!);
-                            }
-                            String? token = await provider.loginAction(context);
-                            if (token != null) {
-                              widget.onSuccess(token);
-                            }
-                          },
-                          child: provider.isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    valueColor:
-                                        AlwaysStoppedAnimation(Colors.white),
-                                  ),
-                                )
-                              : const Text(
-                                  'Войти',
-                                  style: TextStyle(color: Colors.white),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: 48,
+                            child: TextField(
+                              controller: provider.password,
+                              obscureText: !provider.isVisible,
+                              autofillHints: const [AutofillHints.password],
+                              decoration: InputDecoration(
+                                hintText: 'Пароль',
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: SvgPicture.asset(AppIcons.password,
+                                      width: 24, height: 24),
                                 ),
-                        ),
+                                suffixIcon: IconButton(
+                                  icon: SvgPicture.asset(
+                                    provider.isVisible
+                                        ? AppIcons.eyeOpen
+                                        : AppIcons.eyeClose,
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  onPressed: () => provider.toggleVisibility(),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    WidgetStateProperty.all(Colors.blue),
+                                shape: WidgetStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
+                                elevation: const WidgetStatePropertyAll(0),
+                              ),
+                              onPressed: () async {
+                                if (widget.testLogin != null) {
+                                  provider.testLogin(widget.testLogin!);
+                                }
+                                String? token =
+                                    await provider.loginAction(context);
+                                if (token != null) {
+                                  widget.onSuccess(token);
+                                }
+                              },
+                              child: provider.isLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation(
+                                            Colors.white),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Войти',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
