@@ -1,7 +1,9 @@
+import '../models/test_login.dart';
 import '../repository/auth_repository.dart';
 import '../utils/show_top_snack_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import '../models/appearance.dart';
 import '../utils/logger.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -44,6 +46,12 @@ class AuthProvider extends ChangeNotifier {
   void toggleVisibility() {
     HapticFeedback.lightImpact();
     isVisible = !isVisible;
+    notifyListeners();
+  }
+
+  void testLogin(TestLogin testLogin) {
+    login.text = testLogin.username;
+    password.text = testLogin.password;
     notifyListeners();
   }
 }

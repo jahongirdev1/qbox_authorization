@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:qbox_authorization/src/models/test_login.dart';
 
 import '../provider/auth_provider.dart';
 import '../styles/app_icons.dart';
@@ -12,6 +13,7 @@ class AuthScreen extends StatefulWidget {
     required this.onSuccess,
     this.localeId = 1,
     super.key,
+    this.testLogin,
   });
 
   /// Функция, вызываемая при успешном завершении операции.
@@ -31,6 +33,9 @@ class AuthScreen extends StatefulWidget {
   /// - `2` — казахский (`kk`)
   /// - `3` — английский (`en`)
   final int localeId;
+
+  /// Тестовые данные для входа.
+  final TestLogin? testLogin;
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -149,6 +154,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             elevation: const WidgetStatePropertyAll(0),
                           ),
                           onPressed: () async {
+                            if (widget.testLogin != null) {
+                              provider.testLogin(widget.testLogin!);
+                            }
                             String? token = await provider.loginAction(context);
                             if (token != null) {
                               widget.onSuccess(token);

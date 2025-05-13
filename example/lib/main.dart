@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:qbox_authorization/qbox_authorization.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(

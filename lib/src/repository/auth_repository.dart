@@ -1,35 +1,9 @@
 import 'dart:convert';
 
+import '../models/appearance.dart';
+import '../models/response_message.dart';
 import '../service/api_service.dart';
 import '../utils/logger.dart';
-
-class ResponseMessage {
-  final bool success;
-  final String? message;
-  final String? token;
-
-  const ResponseMessage({
-    required this.success,
-    required this.message,
-    required this.token,
-  });
-
-  factory ResponseMessage.fromJson(Map<String, dynamic> json) {
-    final error = json['error'] as Map<String, dynamic>? ?? {};
-
-    return ResponseMessage(
-      success: json['_success'] as bool,
-      message: error['message'] as String?,
-      token: json['token'] as String?,
-    );
-  }
-
-  @override
-  String toString() => 'ResponseMessage('
-      'success: $success,'
-      'error: $message,'
-      'token: $token)';
-}
 
 abstract class IAuthRepository {
   Future<Appearance> getAppearance(String baseUrl, int localeId);
@@ -109,36 +83,4 @@ class AuthRepository implements IAuthRepository {
       );
     }
   }
-}
-
-class Appearance {
-  const Appearance({
-    required this.icon,
-    required this.backgroundImages,
-    required this.title,
-    required this.description,
-  });
-
-  final String icon;
-  final List<String> backgroundImages;
-  final String title;
-  final String description;
-
-  factory Appearance.fromJson(Map<String, dynamic> json) {
-    return Appearance(
-      icon: (json['icon'] as String? ?? ""),
-      backgroundImages: (json['background_images'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
-      title: json['title'] as String? ?? 'Ai Box',
-      description: json['description'] as String? ?? '',
-    );
-  }
-
-  @override
-  String toString() => 'Appearance('
-      'icon: $icon,'
-      'backgroundImages: $backgroundImages,'
-      'title: $title,'
-      'description: $description)';
 }
