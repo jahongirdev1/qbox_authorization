@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Change ui
+
 ## 1.0.1
 
 - Updated README to describe the new workspace-first flow, localization options, and direct `AuthScreen` usage.

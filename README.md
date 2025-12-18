@@ -16,7 +16,7 @@ QBox Authorization provides a complete workspace-aware authentication flow for F
 
 ```yaml
 dependencies:
-  qbox_authorization: ^1.0.0
+  qbox_authorization: ^1.0.2
 ```
 
 ```sh
@@ -78,7 +78,7 @@ If you already know the tenant base URL (for example, you store it with the user
 
 ```dart
 AuthScreen(
-  baseUrl: 'https://qbox.company.kz',
+  baseUrl: '<YOUR_BASE_URL>',
   localeId: 2,
   testLogin: const TestLogin(username: 'demo', password: 'secret123'), // optional
   onSuccess: (token, baseUrl) {
@@ -91,11 +91,11 @@ Use the optional `testLogin` to pre-fill credentials in QA builds. When omitted,
 
 ## 🌐 Localization reference
 
-| `localeId` | Language |
-| --- | --- |
-| `1` | Russian (`ru`) – default |
-| `2` | Kazakh (`kk`) |
-| `3` | English (`en`) |
+| `localeId` | Language                 |
+| ---------- | ------------------------ |
+| `1`        | Russian (`ru`) – default |
+| `2`        | Kazakh (`kk`)            |
+| `3`        | English (`en`)           |
 
 The same `localeId` is passed to both the domain discovery screen and the `/appearance` request, so your backend can serve localized branding assets and strings.
 
