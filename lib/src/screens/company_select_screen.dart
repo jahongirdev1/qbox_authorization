@@ -33,6 +33,8 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
   @override
   Widget build(BuildContext context) {
     final viewInsets = MediaQuery.of(context).viewInsets;
+    final bool isKeyboardVisible = viewInsets.bottom > 0;
+    final double bottomPadding = isKeyboardVisible ? 14 : 100;
 
     return Scaffold(
       body: Stack(
@@ -46,159 +48,147 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 80),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image(
+                        image: AssetImage(AppIcons.logo),
+                        height: 100,
+                        width: 100,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Подключитесь к рабочему\nпространству вашей компании',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 90),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 80),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image(
-                              image: AssetImage(AppIcons.logo),
-                              height: 100,
-                              width: 100,
+                          TextField(
+                            cursorColor: Colors.blue,
+                            controller: _domainController,
+                            onChanged: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              hintText: 'Введите домен компании',
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixIcon: const Icon(Icons.language),
+                              suffixIcon: _domainController.text.isNotEmpty
+                                  ? IconButton(
+                                      onPressed: () {
+                                        _domainController.clear();
+                                        setState(() {});
+                                      },
+                                      icon: const Icon(Icons.close),
+                                    )
+                                  : null,
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Подключитесь к рабочему\nпространству вашей компании',
-                            textAlign: TextAlign.center,
+                          const SizedBox(height: 8),
+                          Text(
+                            textAlign: TextAlign.start,
+                            'пример: qbox.company.kz',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
+                              color: Colors.white70,
+                              fontSize: 14,
                             ),
-                          ),
-                          const SizedBox(height: 90),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TextField(
-                                  cursorColor: Colors.blue,
-                                  controller: _domainController,
-                                  onChanged: (_) => setState(() {}),
-                                  decoration: InputDecoration(
-                                    hintText: 'Введите домен компании',
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    prefixIcon: const Icon(Icons.language),
-                                    suffixIcon:
-                                        _domainController.text.isNotEmpty
-                                            ? IconButton(
-                                                onPressed: () {
-                                                  _domainController.clear();
-                                                  setState(() {});
-                                                },
-                                                icon: const Icon(Icons.close),
-                                              )
-                                            : null,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  textAlign: TextAlign.start,
-                                  'пример: qbox.company.kz',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          // QRWidget(),
-                          const Spacer(),
-                          Consumer<AuthProvider>(
-                            builder: (context, provider, _) {
-                              final isButtonEnabled =
-                                  isValid && !provider.isAppearanceLoading;
-                              return AnimatedPadding(
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.easeOut,
-                                padding: EdgeInsets.fromLTRB(
-                                  24,
-                                  24,
-                                  24,
-                                  300 + viewInsets.bottom,
-                                ),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                    style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(
-                                        isButtonEnabled
-                                            ? const Color(0xFF2b7fff)
-                                            : const Color(0xFF39619f),
-                                      ),
-                                      shape: WidgetStateProperty.all(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                      ),
-                                      elevation:
-                                          const WidgetStatePropertyAll(0),
-                                    ),
-                                    onPressed: isButtonEnabled
-                                        ? () async {
-                                            FocusScope.of(context).unfocus();
-                                            final domain =
-                                                _domainController.text.trim();
-                                            final baseUrl = 'https://$domain';
-                                            final success =
-                                                await provider.getAppearance(
-                                              context,
-                                              baseUrl,
-                                              widget.localeId,
-                                            );
-
-                                            if (!mounted) return;
-                                            if (success) {
-                                              widget.onContinue(baseUrl);
-                                            }
-                                          }
-                                        : null,
-                                    child: provider.isAppearanceLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                Colors.white,
-                                              ),
-                                            ),
-                                          )
-                                        : const Text(
-                                            'Продолжить',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                              );
-                            },
                           ),
                         ],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    // QRWidget(),
+                    const Spacer(),
+                    Consumer<AuthProvider>(
+                      builder: (context, provider, _) {
+                        final isButtonEnabled =
+                            isValid && !provider.isAppearanceLoading;
+                        return AnimatedPadding(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
+                          padding: EdgeInsets.fromLTRB(
+                            24,
+                            24,
+                            24,
+                            bottomPadding,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all(
+                                  isButtonEnabled
+                                      ? const Color(0xFF2b7fff)
+                                      : const Color(0xFF39619f),
+                                ),
+                                shape: WidgetStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                elevation: const WidgetStatePropertyAll(0),
+                              ),
+                              onPressed: isButtonEnabled
+                                  ? () async {
+                                      FocusScope.of(context).unfocus();
+                                      final domain =
+                                          _domainController.text.trim();
+                                      final baseUrl = 'https://$domain';
+                                      final success =
+                                          await provider.getAppearance(
+                                        context,
+                                        baseUrl,
+                                        widget.localeId,
+                                      );
+
+                                      if (!mounted) return;
+                                      if (success) {
+                                        widget.onContinue(baseUrl);
+                                      }
+                                    }
+                                  : null,
+                              child: provider.isAppearanceLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Продолжить',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 );
               },
             ),
