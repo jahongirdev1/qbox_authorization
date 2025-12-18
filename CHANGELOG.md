@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Updated README to describe the new workspace-first flow, localization options, and direct `AuthScreen` usage.
+- Added changelog entry to match the current package metadata.
+
 ## 1.0.0
 
 - Initial public release of QBox Authorization.
