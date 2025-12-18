@@ -16,8 +16,8 @@ class AuthScreen extends StatefulWidget {
 
   /// Функция, вызываемая при успешном завершении операции.
   ///
-  /// Принимает [token] — строковый идентификатор, полученный в результате успешной авторизации.
-  final void Function(String token) onSuccess;
+  /// Принимает [token], [baseUrl] — строковый идентификатор, полученный в результате успешной авторизации.
+  final void Function(String token, String baseUrl) onSuccess;
 
   /// Базовый URL API.
   ///
@@ -43,7 +43,10 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.initialize(widget.baseUrl, widget.localeId);
+    if (authProvider.appearance == null ||
+        authProvider.baseUrl != widget.baseUrl) {
+      authProvider.initialize(widget.baseUrl, widget.localeId);
+    }
     super.initState();
   }
 
@@ -187,7 +190,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 String? token =
                                     await provider.loginAction(context);
                                 if (token != null) {
-                                  widget.onSuccess(token);
+                                  widget.onSuccess(token, widget.baseUrl);
                                 }
                               },
                               child: provider.isLoading

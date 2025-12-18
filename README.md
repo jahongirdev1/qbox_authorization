@@ -2,52 +2,37 @@
 
 # QBox Authorization
 
-QBox Authorization is a simple yet powerful authentication package for Flutter applications. It provides a ready-to-use login screen and integrates seamlessly with the Provider state management solution.
+QBox Authorization provides a complete workspace-aware authentication flow for Flutter apps. It ships a domain selection screen, branded login UI that is configured from your backend `/appearance` endpoint, and the `provider`-powered state management needed to obtain an auth token in only a few lines of code.
 
-## 🚀 Features
+## 🚀 What’s inside
 
-✅ Ready-made authentication screen with a modern UI  
-✅ Uses `provider` for state management  
-✅ Handles login logic and token retrieval  
-✅ Fully customizable and easy to integrate
+- Workspace picker that validates a company domain before showing the login form.
+- Remote theming via the `/appearance` endpoint (icon, title, background, description).
+- Localized UI (1: Russian, 2: Kazakh, 3: English) with runtime switching through `localeId`.
+- Token-based login handled by `AuthProvider` and returned through the `onSuccess` callback.
+- Optional `TestLogin` helper for QA/demo presets and built-in loading/error handling.
 
 ## 📦 Installation
-
-Add this to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
   qbox_authorization: ^1.0.0
 ```
 
-Then run:
-
 ```sh
 flutter pub get
 ```
 
-## 🛠 Usage
+## ⚙️ Getting started
 
-### 1️⃣ Import the package:
-
-```dart
-import 'package:qbox_authorization/qbox_authorization.dart';
-```
-
-### 2️⃣ Wrap your app with `MultiProvider`
-
-Since `AuthProvider` is responsible for managing the authentication state, you need to add it to the Provider tree before using `AuthScreen`. The recommended way is to wrap your `MaterialApp` with `MultiProvider`:
+### 1. Register `AuthProvider`
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:qbox_authorization/qbox_authorization.dart';
-
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: const MyApp(),
     ),
@@ -55,33 +40,28 @@ void main() {
 }
 ```
 
-### 3️⃣ Add `AuthScreen`
+`AuthProvider` owns the login controllers, visibility state, token fetching, and `/appearance` cache, so it must live above the widgets that use `AuthFlow` or `AuthScreen`.
 
-Use `AuthScreen` to handle authentication in your app. Once the user logs in successfully, the `onSuccess` callback will be triggered with the authentication token.
+### 2. Drop in the full flow
 
 ```dart
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  void _handleLoginSuccess(BuildContext context, String token) {
-    print('Login successful! Token: $token');
-
-    // Navigate to the home screen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-    );
+  void _handleSuccess(BuildContext context, String token, String baseUrl) {
+    // Persist the token or navigate to the rest of your app.
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Builder(
         builder: (context) {
-          return AuthScreen(
-            baseUrl: '<YOUR_API_BASE_URL>',
-            onSuccess: (token) => _handleLoginSuccess(context, token),
-            localeId: 2,
+          return AuthFlow(
+            localeId: 1, // 1=ru, 2=kk, 3=en
+            onSuccess: (token, baseUrl) => _handleSuccess(context, token, baseUrl),
           );
         },
       ),
@@ -90,55 +70,47 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### 4️⃣ HomeScreen Example
+`AuthFlow` first renders the company selection screen where the user types their domain (e.g., `qbox.company.kz`). Once the package validates the domain by calling `https://{domain}/appearance?locale_id=...`, it automatically transitions to the branded login UI and finally invokes `onSuccess(token, baseUrl)` when authentication completes.
 
-After a successful login, navigate to a new screen:
+### 3. Need to jump straight to the login screen?
 
-```dart
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home Screen')),
-      body: const Center(
-        child: Text('Welcome to Home Screen!'),
-      ),
-    );
-  }
-}
-```
-
-## 💡 Why Use `MultiProvider`?
-
-The `MultiProvider` widget is necessary because `AuthProvider` is a `ChangeNotifier`, which means it holds the state for authentication. Without wrapping the app with `MultiProvider`, the login logic wouldn't function correctly as `AuthProvider` wouldn't be accessible throughout the app.
+If you already know the tenant base URL (for example, you store it with the user profile), you can bypass the domain step and use `AuthScreen` directly:
 
 ```dart
-MultiProvider(
-  providers: [
-    ChangeNotifierProvider(create: (context) => AuthProvider()),
-  ],
-  child: MyApp(),
-)
+AuthScreen(
+  baseUrl: 'https://qbox.company.kz',
+  localeId: 2,
+  testLogin: const TestLogin(username: 'demo', password: 'secret123'), // optional
+  onSuccess: (token, baseUrl) {
+    // Handle the token.
+  },
+);
 ```
 
-✅ Ensures authentication state is available globally.  
-✅ Keeps the UI updated when authentication state changes.  
-✅ Allows easy integration with other providers in the future.
+Use the optional `testLogin` to pre-fill credentials in QA builds. When omitted, users interact with the regular text fields.
+
+## 🌐 Localization reference
+
+| `localeId` | Language |
+| --- | --- |
+| `1` | Russian (`ru`) – default |
+| `2` | Kazakh (`kk`) |
+| `3` | English (`en`) |
+
+The same `localeId` is passed to both the domain discovery screen and the `/appearance` request, so your backend can serve localized branding assets and strings.
+
+## 🧪 Example project
+
+Check `example/lib/main.dart` for a runnable Flutter app that wires the provider, launch flow, and a dummy `HomeScreen`. Use it as a quick sanity check after integrating the package.
 
 ## 📜 License
 
-This package is licensed under the MIT License.
+MIT © QBox Authorization contributors.
 
-## 🛠 Contributing
+## 🙋 Support & contributions
 
-Contributions are welcome! Feel free to submit issues and pull requests to improve this package.
-
-## 📞 Support
-
-If you encounter any issues or need help, feel free to open an issue on GitHub or reach out to the maintainer.
+Issues and pull requests are welcome on GitHub. If you run into a problem integrating the package (appearance endpoint, localization, etc.), open an issue with reproduction steps and we’ll help as soon as possible.
 
 ---
 
-🚀 **Enjoy hassle-free authentication with QBox Authorization!**
+🚀 Enjoy hassle-free, branded authentication flows with QBox Authorization!

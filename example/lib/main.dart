@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:qbox_authorization/qbox_authorization.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +18,9 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  void _handleLoginSuccess(BuildContext context, String token) {
+  void _handleLoginSuccess(BuildContext context, String token, String baseUrl) {
     print('Login successful! Token: $token');
+    print('Base URL: $baseUrl');
 
     Navigator.push(
       context,
@@ -28,12 +31,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Builder(
         builder: (context) {
-          return AuthScreen(
-            baseUrl: '<YOUR_API_BASE_URL>',
-            onSuccess: (token) => _handleLoginSuccess(context, token),
-            localeId: 2,
+          return AuthFlow(
+            onSuccess: (token, baseUrl) {
+              _handleLoginSuccess(context, token, baseUrl);
+            },
           );
         },
       ),

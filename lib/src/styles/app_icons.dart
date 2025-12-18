@@ -9,4 +9,11 @@ class AppIcons {
       'packages/qbox_authorization/assets/icons/eye_close.svg';
   static const String eyeOpen =
       'packages/qbox_authorization/assets/icons/eye_open.svg';
+
+  /// Image asset paths
+  static const String logo =
+      'packages/qbox_authorization/assets/images/logo.png';
+
+  static const String background =
+      'packages/qbox_authorization/assets/images/background.png';
 }

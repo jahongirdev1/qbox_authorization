@@ -42,7 +42,9 @@ class AuthRepository implements IAuthRepository {
       return appearance;
     } catch (e) {
       fatal("Appearance data error: $e");
-      return Future.error("Failed to load appearance data");
+      return Future.error(
+        "Не удалось найти рабочее пространство. Проверьте домен и попробуйте снова.",
+      );
     }
   }
 
