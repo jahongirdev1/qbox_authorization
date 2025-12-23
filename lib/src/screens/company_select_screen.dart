@@ -37,6 +37,7 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
     final double bottomPadding = isKeyboardVisible ? 14 : 100;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Image(
