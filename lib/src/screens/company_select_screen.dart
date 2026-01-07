@@ -1,10 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:qbox_authorization/src/screens/qr_scanner.dart';
 import 'package:qbox_authorization/src/styles/app_icons.dart';
+import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
+import 'package:flutter/material.dart';
 
 class CompanySelectScreen extends StatefulWidget {
   final void Function(String baseUrl) onContinue;
@@ -23,12 +23,20 @@ class CompanySelectScreen extends StatefulWidget {
 class _CompanySelectScreenState extends State<CompanySelectScreen> {
   final TextEditingController _domainController = TextEditingController();
 
-  bool get isValid => _domainController.text.trim().isNotEmpty;
+  bool get isValid => _extractDomain(_domainController.text).isNotEmpty;
 
   @override
   void dispose() {
     _domainController.dispose();
     super.dispose();
+  }
+
+  String _extractDomain(String value) {
+    var normalized = value.trim();
+    normalized = normalized.replaceFirst(RegExp(r'^https?://'), '');
+    normalized = normalized.replaceFirst(RegExp(r'^www\.'), '');
+    normalized = normalized.replaceAll(RegExp(r'/$'), '');
+    return normalized;
   }
 
   @override
@@ -39,19 +47,15 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-
-      /// 🔥 BACKGROUND FULL SCREEN
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(AppIcons.background),
-            fit: BoxFit.cover, // 🔑 butun ekranni qoplaydi
+            fit: BoxFit.cover,
           ),
         ),
-
-        /// CONTENT
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
@@ -61,8 +65,6 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 60),
-
-                /// LOGO
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -71,10 +73,7 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
                     width: 100,
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                /// TITLE
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
@@ -88,10 +87,7 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 55),
-
-                /// INPUT
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
@@ -131,8 +127,85 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 1,
+                          color: Colors.white30,
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'ИЛИ',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: 1,
+                          color: Colors.white30,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final scannedDomain = await Navigator.push<String?>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const QRScanner(),
+                          ),
+                        );
 
-                /// BUTTON
+                        if (scannedDomain == null ||
+                            scannedDomain.trim().isEmpty) {
+                          return;
+                        }
+
+                        _domainController.text = _extractDomain(scannedDomain);
+                        setState(() {});
+                      },
+                      icon: const Icon(
+                        Icons.qr_code,
+                        color: Colors.white,
+                      ),
+                      label: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'Сканировать QR-код',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: Colors.white60,
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 Consumer<AuthProvider>(
                   builder: (context, provider, _) {
                     final isEnabled = isValid && !provider.isAppearanceLoading;
@@ -152,7 +225,9 @@ class _CompanySelectScreenState extends State<CompanySelectScreen> {
                               ? () async {
                                   FocusScope.of(context).unfocus();
 
-                                  final domain = _domainController.text.trim();
+                                  final domain =
+                                      _extractDomain(_domainController.text);
+                                  if (domain.isEmpty) return;
                                   final baseUrl = 'https://$domain';
 
                                   final success = await provider.getAppearance(

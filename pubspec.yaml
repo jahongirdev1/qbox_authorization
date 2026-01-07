@@ -12,10 +12,11 @@ environment:
 
 dependencies:
   flutter:
-    sdk: flutter
+    sdk: flutter  
   dio: ^5.8.0+1
   provider: ^6.1.2
   flutter_svg: ^2.0.14
+  qr_code_scanner_plus: ^2.0.14
 
 dev_dependencies:
   flutter_test:
